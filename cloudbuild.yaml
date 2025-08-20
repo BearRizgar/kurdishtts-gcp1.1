@@ -1,0 +1,65 @@
+steps:
+  # Step 1: Build the Docker image
+  - name: "gcr.io/cloud-builders/docker"
+    args:
+      [
+        "build",
+        "-t",
+        "gcr.io/$PROJECT_ID/kurdishtts-gcp:$COMMIT_SHA",
+        "-t",
+        "gcr.io/$PROJECT_ID/kurdishtts-gcp:latest",
+        ".",
+      ]
+    timeout: 1800s # 30 minutes for build
+
+  # Step 2: Push to Container Registry
+  - name: "gcr.io/cloud-builders/docker"
+    args: ["push", "gcr.io/$PROJECT_ID/kurdishtts-gcp:$COMMIT_SHA"]
+
+  - name: "gcr.io/cloud-builders/docker"
+    args: ["push", "gcr.io/$PROJECT_ID/kurdishtts-gcp:latest"]
+
+  # Step 3: Deploy to Cloud Run with verbose logging
+  - name: "gcr.io/google.com/cloudsdktool/cloud-sdk:latest"
+    entrypoint: "gcloud"
+    args:
+      [
+        "run",
+        "deploy",
+        "kurdishtts-gcp",
+        "--image",
+        "gcr.io/$PROJECT_ID/kurdishtts-gcp:$COMMIT_SHA",
+        "--region",
+        "europe-north2",
+        "--platform",
+        "managed",
+        "--allow-unauthenticated",
+        "--memory",
+        "8Gi",
+        "--cpu",
+        "4",
+        "--timeout",
+        "3600",
+        "--concurrency",
+        "1",
+        "--max-instances",
+        "10",
+        "--set-env-vars",
+        "GCS_BUCKET=kurdishttsmodels,USE_GCS=true,ALLOWED_ORIGINS=http://localhost:3000;https://www.kurdishtts.com",
+        "--verbosity",
+        "debug",
+      ]
+
+# Build configuration with proper logging
+options:
+  machineType: "E2_HIGHCPU_8"
+  diskSizeGb: 100
+  logging: CLOUD_LOGGING_ONLY
+
+# Timeout for entire build
+timeout: 2400s # 40 minutes
+
+# Images to be pushed
+images:
+  - "gcr.io/$PROJECT_ID/kurdishtts-gcp:$COMMIT_SHA"
+  - "gcr.io/$PROJECT_ID/kurdishtts-gcp:latest"
