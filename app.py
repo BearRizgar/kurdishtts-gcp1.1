@@ -221,7 +221,7 @@ class KurdishTTSManager:
         self.model_cache.clear()
         
         # Get GCS configuration from environment variables
-        gcs_bucket = os.getenv('GCS_BUCKET', 'kurdishttsmodels')
+        gcs_bucket = os.getenv('GCS_BUCKET', 'kurdishttsmodels1')
         use_gcs = os.getenv('USE_GCS', 'true').lower() == 'true'
         
         # Create models directory if it doesn't exist

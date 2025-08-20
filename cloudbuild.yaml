@@ -45,7 +45,7 @@ steps:
         "--max-instances",
         "10",
         "--set-env-vars",
-        "GCS_BUCKET=kurdishttsmodels,USE_GCS=true,ALLOWED_ORIGINS=http://localhost:3000;https://www.kurdishtts.com",
+        "GCS_BUCKET=kurdishttsmodels1,USE_GCS=true,ALLOWED_ORIGINS=http://localhost:3000;https://www.kurdishtts.com",
         "--verbosity",
         "debug",
       ]
